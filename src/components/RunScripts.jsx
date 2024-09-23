@@ -6,8 +6,7 @@ const RunScripts = ({ onFilesUpdate }) => {
   const [scriptName, setScriptName] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-
-  
+  const [statusMessages, setStatusMessages] = useState([]);
 
   const handleRunScript = async (e) => {
     e.preventDefault();
