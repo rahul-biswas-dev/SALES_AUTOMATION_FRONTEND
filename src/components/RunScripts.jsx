@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { runScript, getFiles } from '../services/api';
 
-const RunScripts = ({ onFilesUpdate }) => {
+function RunScripts() {
   const [scriptPassword, setScriptPassword] = useState('');
   const [scriptName, setScriptName] = useState('');
   const [message, setMessage] = useState('');
@@ -20,6 +20,37 @@ const RunScripts = ({ onFilesUpdate }) => {
       setMessage(error.response.data.error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const runScript = async (scriptName) => {
+    console.log(`Attempting to run script: ${scriptName}`); // Debug log
+    setStatusMessages(prevMessages => [...prevMessages, `Attempting to run ${scriptName}...`]);
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/run_script/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // ... other headers ...
+        },
+        body: JSON.stringify({ script_name: scriptName }),
+      });
+
+      console.log(`Response status: ${response.status}`); // Debug log
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Response data:', data); // Debug log
+
+      setStatusMessages(prevMessages => [...prevMessages, `${scriptName} executed successfully`]);
+      // ... handle successful response ...
+    } catch (error) {
+      console.error(`Error running ${scriptName}:`, error);
+      setStatusMessages(prevMessages => [...prevMessages, `Error running ${scriptName}: ${error.message}`]);
     }
   };
 
@@ -66,6 +97,6 @@ const RunScripts = ({ onFilesUpdate }) => {
       </div>
     </div>
   );
-};
+}
 
 export default RunScripts;
